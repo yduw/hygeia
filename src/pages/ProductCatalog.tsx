@@ -207,9 +207,15 @@ export default function ProductCatalog() {
 
   useEffect(() => {
     const savedPlan = localStorage.getItem("selectedInsurancePlan");
+    const hasVisitedBefore = localStorage.getItem("hasVisitedHygeia");
+    
     if (savedPlan) {
       setSelectedPlan(savedPlan);
       setPlanSelected(true);
+    } else if (!hasVisitedBefore) {
+      // Show popup on first visit
+      setIsModalOpen(true);
+      localStorage.setItem("hasVisitedHygeia", "true");
     }
 
     // Load insurance providers dynamically from API
@@ -363,9 +369,9 @@ export default function ProductCatalog() {
                   </DialogTrigger>
                 <DialogContent className="sm:max-w-md">
                   <DialogHeader>
-                    <DialogTitle>Select Your Insurance Provider</DialogTitle>
-                    <DialogDescription>
-                      Choose your insurance plan to see available breast pumps.
+                    <DialogTitle className="text-xl">Select Your Insurance Provider</DialogTitle>
+                    <DialogDescription className="text-base">
+                      Please choose your insurance plan to see which breast pumps are covered by your benefits and start shopping.
                     </DialogDescription>
                   </DialogHeader>
                   <div className="space-y-4">
@@ -609,7 +615,7 @@ export default function ProductCatalog() {
             )}
 
             {/* Products Grid - Always Show */}
-            <div className="relative">
+            <div className={`relative transition-all duration-300 ${isModalOpen ? 'blur-sm opacity-75' : ''}`}>
               <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
                 {filteredProducts.map((pump) => (
                   <Card key={pump.id} className="group border border-gray-200 hover:shadow-lg transition-all duration-200 hover:-translate-y-1 bg-white">

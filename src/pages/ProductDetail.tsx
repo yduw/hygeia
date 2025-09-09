@@ -339,11 +339,16 @@ export default function ProductDetail() {
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-6">
               <div className="flex items-center">
-                <img 
-                  src={hygeiaLogo} 
-                  alt="Hygeia Health" 
-                  className="w-24 h-24 object-contain"
-                />
+                <button 
+                  onClick={() => navigate('/')}
+                  className="hover:opacity-80 transition-opacity cursor-pointer"
+                >
+                  <img 
+                    src={hygeiaLogo} 
+                    alt="Hygeia Health" 
+                    className="w-24 h-24 object-contain"
+                  />
+                </button>
               </div>
               <div className="flex items-center header-phone text-gray-700">
                 <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">

@@ -102,10 +102,152 @@ export default function OrderForm() {
 
   const onSubmit = async (data: OrderFormData) => {
     setIsSubmitting(true);
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    console.log("Order submitted:", data);
-    setIsSubmitting(false);
-    setIsSubmitted(true);
+    
+    try {
+      let currentVid = null;
+      let currentDealId = null;
+
+      // Step 1: Submit user details (matches FormUserDetails.js)
+      const userDetailsResponse = await fetch('https://api2.hygeiahealth.com/api/v1/Form/Submit/UserDetails', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: data.email,
+          phone: data.phone,
+          firstName: data.firstName,
+          lastName: data.lastName,
+          dueDate: data.dueDate,
+          firstBaby: true, // Default assumption
+          stateResidence: data.state,
+          prefferedCommunicationMethod: "Email",
+          leadSource: "New Website"
+        })
+      });
+
+      const userDetailsResult = await userDetailsResponse.json();
+      if (userDetailsResult.hasError) {
+        throw new Error('Failed to create user profile');
+      }
+
+      currentVid = userDetailsResult.vid;
+      currentDealId = userDetailsResult.dealId;
+
+      // Step 2: Submit insurance info (matches FormInsuranceInfo.js)
+      const insuranceResponse = await fetch('https://api2.hygeiahealth.com/api/v1/Form/Submit/InsuranceInfo', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          vid: currentVid,
+          dealId: currentDealId,
+          firstName: data.firstName,
+          lastName: data.lastName,
+          memberID: data.memberID,
+          dobMonth: data.dateOfBirth ? data.dateOfBirth.split('-')[1] : '',
+          dobDay: data.dateOfBirth ? data.dateOfBirth.split('-')[2] : '',
+          dobYear: data.dateOfBirth ? data.dateOfBirth.split('-')[0] : ''
+        })
+      });
+
+      const insuranceResult = await insuranceResponse.json();
+      if (insuranceResult.hasError) {
+        throw new Error('Failed to update insurance information');
+      }
+
+      // Step 3: Submit pump selection (matches FormPumpSelectionConfirm.js)
+      const pumpResponse = await fetch('https://api2.hygeiahealth.com/api/v1/Form/Submit/ConfirmHygeia', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          vid: currentVid,
+          dealId: currentDealId,
+          pump: product.name || "Selected Pump",
+          doctorMike: false // Default to false unless specified
+        })
+      });
+
+      const pumpResult = await pumpResponse.json();
+      if (pumpResult.hasError) {
+        throw new Error('Failed to confirm pump selection');
+      }
+
+      // Step 4: Submit shipping address (matches FormAddressLookup.js)
+      const shippingResponse = await fetch('https://api2.hygeiahealth.com/api/v1/Form/Submit/ShippingAddress', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          vid: currentVid,
+          dealId: currentDealId,
+          shippingAddressL1: data.address,
+          shippingAddressL2: "", // Empty second address line
+          shippingAddressCity: data.city,
+          shippingAddressState: data.state,
+          shippingAddressZip: data.zipCode
+        })
+      });
+
+      const shippingResult = await shippingResponse.json();
+      if (shippingResult.hasError) {
+        throw new Error('Failed to update shipping address');
+      }
+
+      // Step 5: Submit doctor info (matches FormOBInfo.js)
+      const doctorResponse = await fetch('https://api2.hygeiahealth.com/api/v1/Form/Submit/OBInfo', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          vid: currentVid,
+          dealId: currentDealId,
+          gynFirstName: data.physicianFirstName,
+          gynLastName: data.physicianLastName,
+          gynPhoneNumber: data.physicianPhone
+        })
+      });
+
+      const doctorResult = await doctorResponse.json();
+      if (doctorResult.hasError) {
+        throw new Error('Failed to update doctor information');
+      }
+
+      // Step 6: Submit final agreements (matches FormTransactionAgreements.js)
+      const agreementsResponse = await fetch('https://api2.hygeiahealth.com/api/v1/Form/Submit/Agreements', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          vid: currentVid,
+          dealId: currentDealId,
+          placingOrderAgreement: data.finalSaleAcknowledgment,
+          pasAgreement: data.insuranceBillingConsent,
+          pumpAuthorizationAgreement: data.physicianContactConsent
+        })
+      });
+
+      const agreementsResult = await agreementsResponse.json();
+      if (agreementsResult.hasError) {
+        throw new Error('Failed to submit final agreements');
+      }
+
+      console.log("Order submitted successfully:", data);
+      setIsSubmitted(true);
+      
+    } catch (error) {
+      console.error("Error submitting order:", error);
+      // You could show an error message to the user here
+      alert("There was an error submitting your order. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const nextStep = () => {
@@ -150,11 +292,16 @@ export default function OrderForm() {
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-6">
               <div className="flex items-center">
-                <img 
-                  src={hygeiaLogo} 
-                  alt="Hygeia Health" 
-                  className="w-24 h-24 object-contain"
-                />
+                <button 
+                  onClick={() => navigate('/')}
+                  className="hover:opacity-80 transition-opacity cursor-pointer"
+                >
+                  <img 
+                    src={hygeiaLogo} 
+                    alt="Hygeia Health" 
+                    className="w-24 h-24 object-contain"
+                  />
+                </button>
               </div>
               <div className="flex items-center header-phone text-gray-700">
                 <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">

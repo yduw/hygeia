@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import ProductCatalog from "./pages/ProductCatalog";
 import ProductDetail from "./pages/ProductDetail";
 import OrderForm from "./pages/OrderForm";
+import PASForm from "./pages/PASForm";
 
 export function App() {
   return (
@@ -12,6 +13,7 @@ export function App() {
           <Route path="/" element={<ProductCatalog />} />
           <Route path="/product/:id" element={<ProductDetail />} />
           <Route path="/order/:productId" element={<OrderForm />} />
+          <Route path="/pas" element={<PASForm />} />
         </Routes>
       </div>
     </Router>

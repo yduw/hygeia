@@ -8,7 +8,9 @@
   "scripts": {
     "dev": "bun --hot src/index.tsx",
     "start": "NODE_ENV=production bun src/index.tsx",
-    "build": "bun run build.ts"
+    "build": "bun run build.ts",
+    "test": "jest",
+    "test:integration": "jest __tests__/api.test.js"
   },
   "dependencies": {
     "@hookform/resolvers": "^4.1.0",
@@ -33,7 +35,9 @@
   },
   "devDependencies": {
     "@types/bun": "latest",
+    "@types/jest": "^30.0.0",
     "@types/react": "^18",
-    "@types/react-dom": "^18"
+    "@types/react-dom": "^18",
+    "jest": "^30.1.3"
   }
 }

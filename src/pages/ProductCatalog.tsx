@@ -22,7 +22,8 @@ import elviePumpImg from "../assets/Elvie_Pump.jpg";
 import willowGoImg from "../assets/Willow_Go.jpg";
 import babyBuddhaImg from "../assets/Baby_Buddha.jpg";
 
-const INSURANCE_PROVIDERS = [
+// Default insurance providers (will be loaded dynamically from API)
+const DEFAULT_INSURANCE_PROVIDERS = [
   "Aetna",
   "Anthem Blue Cross Blue Shield", 
   "Blue Cross Blue Shield",
@@ -37,197 +38,163 @@ const INSURANCE_PROVIDERS = [
 ];
 
 const BREAST_PUMPS = [
+  // Free options
   {
     id: 1,
-    name: "Medela Pump in Style Advanced",
-    model: "MaxFlow-PF",
-    image: medelaMaxflowImg,
+    name: "Hygeia Express",
+    model: "Hospital Grade",
+    image: medelaMaxflowImg, // Will need actual Hygeia image
     isUpgrade: false,
     upgradePrice: 0,
+    brand: "Hygeia",
+    manufacturer: "HYGEIA",
+    batteryIncluded: true,
+    carryBagIncluded: true,
+    description: "Hospital-grade pump - Double electric pump, Cordless, Wearable cups included, Free extra collection cups and accessories"
+  },
+  {
+    id: 2,
+    name: "Ameda Mya Joy",
+    model: "Personal Use",
+    image: amedaPurelyImg,
+    isUpgrade: false,
+    upgradePrice: 0,
+    brand: "Ameda",
+    manufacturer: "AMEDA",
+    batteryIncluded: true,
+    carryBagIncluded: true,
+    description: "Personal use pump with reliable performance and comfortable fit"
+  },
+  // Paid upgrade options
+  {
+    id: 3,
+    name: "Elvie Stride",
+    model: "Wearable",
+    image: elviePumpImg,
+    isUpgrade: true,
+    upgradePrice: 60,
+    brand: "Elvie",
+    manufacturer: "ELVIE",
+    batteryIncluded: true,
+    carryBagIncluded: false,
+    description: "Personal use pump with hands-free wearable design"
+  },
+  {
+    id: 4,
+    name: "Medela MaxFlow",
+    model: "PersonalFit",
+    image: medelaMaxflowImg,
+    isUpgrade: true,
+    upgradePrice: 39,
     brand: "Medela",
     manufacturer: "MEDELA",
     batteryIncluded: true,
     carryBagIncluded: true,
-  },
-  {
-    id: 2,
-    name: "Spectra S1 Plus Electric Pump",
-    model: "S2-HG",
-    image: spectraS2Img, 
-    isUpgrade: false,
-    upgradePrice: 0,
-    brand: "Spectra Baby USA",
-    manufacturer: "SPECTRA BABY USA",
-    batteryIncluded: true,
-    carryBagIncluded: true,
-  },
-  {
-    id: 3,
-    name: "Spectra Synergy Gold Portable",
-    model: "SG-PORT",
-    image: spectraSynergyImg,
-    isUpgrade: true,
-    upgradePrice: 89.99,
-    brand: "Spectra Baby USA",
-    manufacturer: "SPECTRA BABY USA",
-    batteryIncluded: true,
-    carryBagIncluded: true,
-  },
-  {
-    id: 4,
-    name: "Ameda Purely Yours Ultra",
-    model: "AMJ-DE",
-    image: amedaPurelyImg,
-    isUpgrade: false,
-    upgradePrice: 0,
-    brand: "Ameda®",
-    manufacturer: "AMEDA INC.",
-    batteryIncluded: false,
-    carryBagIncluded: true,
+    description: "Personal use pump with PersonalFit technology for comfort and efficiency"
   },
   {
     id: 5,
-    name: "Lansinoh SmartPump 2.0",
-    model: "HE-WEAR",
-    image: lansinohSmartImg,
+    name: "Momcozy M5",
+    model: "Portable",
+    image: motifLunaImg,
     isUpgrade: true,
-    upgradePrice: 129.99,
-    brand: "Lansinoh®",
-    manufacturer: "LANSINOH",
+    upgradePrice: 60,
+    brand: "Momcozy",
+    manufacturer: "MOMCOZY",
     batteryIncluded: true,
-    carryBagIncluded: false,
+    carryBagIncluded: true,
+    description: "Personal use with battery backup for on-the-go convenience"
   },
   {
     id: 6,
-    name: "Motif Luna Electric Breast Pump",
-    model: "FIT300-HG",
-    image: motifLunaImg,
-    isUpgrade: false,
-    upgradePrice: 0,
-    brand: "Motif Medical",
-    manufacturer: "MOTIF MEDICAL",
-    batteryIncluded: false,
+    name: "Momcozy S12 Pro",
+    model: "Compact",
+    image: lansinohSmartImg,
+    isUpgrade: true,
+    upgradePrice: 30,
+    brand: "Momcozy",
+    manufacturer: "MOMCOZY",
+    batteryIncluded: true,
     carryBagIncluded: false,
+    description: "Compact personal pump designed for portability and ease of use"
   },
   {
     id: 7,
-    name: "Elvie Stride Wearable",
-    model: "ES-WEAR",
-    image: elviePumpImg,
+    name: "Spectra S1",
+    model: "Professional",
+    image: spectraS2Img,
     isUpgrade: true,
-    upgradePrice: 249.99,
-    brand: "Elvie",
-    manufacturer: "ELVIE",
+    upgradePrice: 100,
+    brand: "Spectra",
+    manufacturer: "SPECTRA",
     batteryIncluded: true,
     carryBagIncluded: true,
+    description: "Professional grade pump with advanced suction technology"
   },
   {
     id: 8,
-    name: "Willow Go Wearable Breast Pump",
-    model: "MS12-PRO",
-    image: willowGoImg,
+    name: "Spectra S2",
+    model: "Wearable",
+    image: spectraS2Img,
     isUpgrade: true,
-    upgradePrice: 199.99,
-    brand: "Willow",
-    manufacturer: "WILLOW INNOVATIONS",
-    batteryIncluded: true,
+    upgradePrice: 29,
+    brand: "Spectra",
+    manufacturer: "SPECTRA",
+    batteryIncluded: false,
     carryBagIncluded: true,
+    description: "Hands-free wearable pump with quiet operation"
   },
   {
     id: 9,
-    name: "Philips Avent Double Electric",
-    model: "M5-PORT",
-    image: babyBuddhaImg,
-    isUpgrade: false,
-    upgradePrice: 0,
-    brand: "Philips Avent",
-    manufacturer: "PHILIPS HEALTHCARE",
-    batteryIncluded: false,
-    carryBagIncluded: false,
+    name: "Spectra Synergy Gold",
+    model: "Alternative",
+    image: spectraSynergyImg,
+    isUpgrade: true,
+    upgradePrice: 130,
+    brand: "Spectra",
+    manufacturer: "SPECTRA",
+    batteryIncluded: true,
+    carryBagIncluded: true,
+    description: "Alternative Medela option with premium features and reliability"
   },
   {
     id: 10,
-    name: "Freemie Independence II",
-    model: "FII-001",
-    image: medelaMaxflowImg,
+    name: "Spectra Synergy Gold Portable (Standard Flange)",
+    model: "Portable-Std",
+    image: spectraSynergyImg,
     isUpgrade: true,
-    upgradePrice: 159.99,
-    brand: "Freemie",
-    manufacturer: "DAO HEALTH",
+    upgradePrice: 155,
+    brand: "Spectra",
+    manufacturer: "SPECTRA",
     batteryIncluded: true,
     carryBagIncluded: true,
+    description: "Personal use pump with standard flanges for comfortable pumping"
   },
   {
     id: 11,
-    name: "Evenflo Advanced Double Electric",
-    model: "EV-ADE",
-    image: spectraS2Img,
-    isUpgrade: false,
-    upgradePrice: 0,
-    brand: "Evenflo ®",
-    manufacturer: "EVENFLO FEEDING",
-    batteryIncluded: false,
+    name: "Spectra Synergy Gold Portable (Wearable Flanges)",
+    model: "Portable-Wear",
+    image: spectraSynergyImg,
+    isUpgrade: true,
+    upgradePrice: 170,
+    brand: "Spectra",
+    manufacturer: "SPECTRA",
+    batteryIncluded: true,
     carryBagIncluded: true,
+    description: "Personal use pump with innovative wearable flanges for hands-free operation"
   },
   {
     id: 12,
-    name: "Freemie Liberty II",
-    model: "FLII-002",
-    image: spectraSynergyImg,
+    name: "Willow Go",
+    model: "Premium",
+    image: willowGoImg,
     isUpgrade: true,
-    upgradePrice: 89.99,
-    brand: "Freemie",
-    manufacturer: "DAO HEALTH",
+    upgradePrice: 290,
+    brand: "Willow",
+    manufacturer: "WILLOW",
     batteryIncluded: true,
     carryBagIncluded: false,
-  },
-  {
-    id: 13,
-    name: "UNIMOM Opera Breast Pump",
-    model: "UNOP-001",
-    image: amedaPurelyImg,
-    isUpgrade: false,
-    upgradePrice: 0,
-    brand: "UNIMOM",
-    manufacturer: "UNIMOM",
-    batteryIncluded: false,
-    carryBagIncluded: false,
-  },
-  {
-    id: 14,
-    name: "Ameda Mya Joy",
-    model: "AMJ-002",
-    image: lansinohSmartImg,
-    isUpgrade: false,
-    upgradePrice: 0,
-    brand: "Ameda®",
-    manufacturer: "AMEDA INC.",
-    batteryIncluded: false,
-    carryBagIncluded: true,
-  },
-  {
-    id: 15,
-    name: "Philips Avent Manual",
-    model: "PAM-001",
-    image: motifLunaImg,
-    isUpgrade: false,
-    upgradePrice: 0,
-    brand: "Philips Avent",
-    manufacturer: "PHILIPS HEALTHCARE",
-    batteryIncluded: false,
-    carryBagIncluded: false,
-  },
-  {
-    id: 16,
-    name: "Elvie Double Electric",
-    model: "ELV-DE",
-    image: elviePumpImg,
-    isUpgrade: true,
-    upgradePrice: 279.99,
-    brand: "Elvie",
-    manufacturer: "ELVIE",
-    batteryIncluded: true,
-    carryBagIncluded: true,
+    description: "Premium wearable pump with advanced technology and discrete design"
   }
 ];
 
@@ -236,6 +203,7 @@ export default function ProductCatalog() {
   const [selectedPlan, setSelectedPlan] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [planSelected, setPlanSelected] = useState(false);
+  const [insuranceProviders, setInsuranceProviders] = useState(DEFAULT_INSURANCE_PROVIDERS);
 
   useEffect(() => {
     const savedPlan = localStorage.getItem("selectedInsurancePlan");
@@ -243,7 +211,27 @@ export default function ProductCatalog() {
       setSelectedPlan(savedPlan);
       setPlanSelected(true);
     }
+
+    // Load insurance providers dynamically from API
+    // For now, we'll use a default state (California) but this could be user-specific
+    loadInsuranceProviders("California");
   }, []);
+
+  const loadInsuranceProviders = async (state: string) => {
+    try {
+      const response = await fetch(`https://api2.hygeiahealth.com/api/v1/utilities/Payor/GetByState/${state}`);
+      const data = await response.json();
+      
+      if (data.Data && data.Data[0] && data.Data[0].Unique) {
+        // Add "OTHER/PLAN NOT LISTED" as the last option
+        const providers = [...data.Data[0].Unique, "OTHER/PLAN NOT LISTED"];
+        setInsuranceProviders(providers);
+      }
+    } catch (error) {
+      console.error("Error loading insurance providers:", error);
+      // Keep default providers if API fails
+    }
+  };
   const [showCoveredOnly, setShowCoveredOnly] = useState(false);
   const [showUpgradeOnly, setShowUpgradeOnly] = useState(false);
   const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
@@ -316,11 +304,16 @@ export default function ProductCatalog() {
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-6">
               <div className="flex items-center">
-                <img 
-                  src={hygeiaLogo} 
-                  alt="Hygeia Health" 
-                  className="w-24 h-24 object-contain"
-                />
+                <button 
+                  onClick={() => navigate('/')}
+                  className="hover:opacity-80 transition-opacity cursor-pointer"
+                >
+                  <img 
+                    src={hygeiaLogo} 
+                    alt="Hygeia Health" 
+                    className="w-24 h-24 object-contain"
+                  />
+                </button>
               </div>
               <div className="flex items-center header-phone text-gray-700">
                 <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
@@ -382,7 +375,7 @@ export default function ProductCatalog() {
                       className="w-full px-3 py-2 border border-gray-300 rounded-md bg-white text-sm focus:outline-none focus:ring-2 focus:ring-[#dc2626] focus:border-transparent"
                     >
                       <option value="">Select your insurance plan</option>
-                      {INSURANCE_PROVIDERS.map((provider) => (
+                      {insuranceProviders.map((provider) => (
                         <option key={provider} value={provider}>
                           {provider}
                         </option>

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
+import { API_ENDPOINTS, mockPASService, isProductionPAS } from '../config/api';
 
 const contactSchema = z.object({
   email: z.string().email('Invalid email address').optional().or(z.literal('')),
@@ -109,25 +110,36 @@ const PASForm: React.FC = () => {
     }
 
     try {
-      const response = await fetch('/api/PAS/RequestOTP', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(payload)
-      });
-
-      if (response.ok) {
-        const result = await response.json();
+      let result;
+      
+      if (isProductionPAS || !API_ENDPOINTS.pasRequestOTP) {
+        // Use mock service in production
+        result = await mockPASService.requestOTP(payload);
         setStep(2);
         setContactMethod(method);
-        alert(`OTP code sent to your ${method}. Check console for development OTP.`);
+        alert(`${result.message}. For demo, use OTP: 123456`);
       } else {
-        throw new Error('Failed to send OTP');
+        // Use real API in development
+        const response = await fetch(API_ENDPOINTS.pasRequestOTP, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(payload)
+        });
+
+        if (response.ok) {
+          result = await response.json();
+          setStep(2);
+          setContactMethod(method);
+          alert(`OTP code sent to your ${method}. Check console for development OTP.`);
+        } else {
+          throw new Error('Failed to send OTP');
+        }
       }
     } catch (err) {
       console.error('Error requesting OTP:', err);
-      setError('Failed to send OTP. Please try again.');
+      setError(err instanceof Error ? err.message : 'Failed to send OTP. Please try again.');
     } finally {
       setSubmitting(false);
     }
@@ -145,29 +157,37 @@ const PASForm: React.FC = () => {
     setError('');
 
     try {
-      const response = await fetch('/api/PAS/ValidateOTP', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          otp: parseInt(otpCode)
-        })
-      });
-
-      const result = await response.json();
-
-      if (response.ok && result.vid) {
-        // Redirect to Medi-Cal PAS page with contact ID
+      let result;
+      
+      if (isProductionPAS || !API_ENDPOINTS.pasValidateOTP) {
+        // Use mock service in production
+        result = await mockPASService.validateOTP({ otp: parseInt(otpCode) });
         alert(`OTP verified successfully! Contact ID: ${result.vid}. In production, this would redirect to: https://www.hygeiahealth.com/medi-cal-pas/?contactId=${result.vid}`);
-        // For development, redirect to home page
         navigate('/');
       } else {
-        throw new Error(result.message || 'Invalid OTP code');
+        // Use real API in development
+        const response = await fetch(API_ENDPOINTS.pasValidateOTP, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            otp: parseInt(otpCode)
+          })
+        });
+
+        result = await response.json();
+
+        if (response.ok && result.vid) {
+          alert(`OTP verified successfully! Contact ID: ${result.vid}. In production, this would redirect to: https://www.hygeiahealth.com/medi-cal-pas/?contactId=${result.vid}`);
+          navigate('/');
+        } else {
+          throw new Error(result.message || 'Invalid OTP code');
+        }
       }
     } catch (err) {
       console.error('Error validating OTP:', err);
-      setError('Invalid OTP code. Please try again.');
+      setError(err instanceof Error ? err.message : 'Invalid OTP code. Please try again.');
     } finally {
       setSubmitting(false);
     }

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams, useLocation, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -51,9 +51,18 @@ export default function OrderForm() {
   const [currentStep, setCurrentStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [selectedPlan, setSelectedPlan] = useState("Insurance Plan");
+  
+  useEffect(() => {
+    const savedPlan = localStorage.getItem("selectedInsurancePlan");
+    if (savedPlan) {
+      setSelectedPlan(savedPlan);
+    } else if (location.state?.selectedPlan) {
+      setSelectedPlan(location.state.selectedPlan);
+    }
+  }, [location.state]);
   
   const product = location.state?.product || { name: "Breast Pump", isUpgrade: false, upgradePrice: 0 };
-  const selectedPlan = location.state?.selectedPlan || "Insurance Plan";
 
   const form = useForm<OrderFormData>({
     resolver: zodResolver(orderSchema),
@@ -123,7 +132,7 @@ export default function OrderForm() {
             </p>
             <Button 
               onClick={() => navigate("/")} 
-              className="bg-[#192866] hover:bg-[#151d5a] text-white"
+              className="bg-blue-400 hover:bg-blue-500 text-white"
             >
               Continue Shopping
             </Button>
@@ -157,7 +166,7 @@ export default function OrderForm() {
             <nav className="flex items-center space-x-4">
               <button 
                 onClick={() => navigate("/")}
-                className="bg-[#dc2626] hover:bg-[#b91c1c] text-white px-6 py-3 rounded-md text-lg font-semibold transition-colors cursor-pointer"
+                className="bg-red-400 hover:bg-red-500 text-white px-6 py-3 rounded-md text-lg font-semibold transition-colors cursor-pointer"
               >
                 Reorder Supplies
               </button>
@@ -165,7 +174,7 @@ export default function OrderForm() {
                 href="https://status.hygeiahealth.com/" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="bg-[#192866] hover:bg-[#151d5a] text-white px-6 py-3 rounded-md text-lg font-semibold transition-colors cursor-pointer"
+                className="bg-blue-400 hover:bg-blue-500 text-white px-6 py-3 rounded-md text-lg font-semibold transition-colors cursor-pointer"
               >
                 Track Order
               </a>
@@ -216,7 +225,7 @@ export default function OrderForm() {
             {[1, 2, 3].map((step) => (
               <div key={step} className="flex items-center">
                 <div className={`rounded-full w-8 h-8 flex items-center justify-center text-sm font-medium ${
-                  step <= currentStep ? 'bg-[#192866] text-white' : 'bg-gray-300 text-gray-600'
+                  step <= currentStep ? 'bg-blue-400 text-white' : 'bg-gray-300 text-gray-600'
                 }`}>
                   {step}
                 </div>
@@ -333,7 +342,7 @@ export default function OrderForm() {
                     <Button 
                       onClick={nextStep} 
                       type="button" 
-                      className="bg-[#dc2626] hover:bg-[#b91c1c] text-white"
+                      className="bg-red-400 hover:bg-red-500 text-white"
                     >
                       Next Step
                     </Button>
@@ -513,14 +522,14 @@ export default function OrderForm() {
                       onClick={prevStep} 
                       type="button" 
                       variant="outline"
-                      className="border-[#192866] text-[#192866] hover:bg-[#192866] hover:text-white"
+                      className="border-blue-400 text-blue-500 hover:bg-blue-400 hover:text-white"
                     >
                       Previous
                     </Button>
                     <Button 
                       onClick={nextStep} 
                       type="button" 
-                      className="bg-[#dc2626] hover:bg-[#b91c1c] text-white"
+                      className="bg-red-400 hover:bg-red-500 text-white"
                     >
                       Next Step
                     </Button>
@@ -649,14 +658,14 @@ export default function OrderForm() {
                       onClick={prevStep} 
                       type="button" 
                       variant="outline"
-                      className="border-[#192866] text-[#192866] hover:bg-[#192866] hover:text-white"
+                      className="border-blue-400 text-blue-500 hover:bg-blue-400 hover:text-white"
                     >
                       Previous
                     </Button>
                     <Button 
                       type="submit" 
                       disabled={isSubmitting}
-                      className="bg-[#dc2626] hover:bg-[#b91c1c] text-white"
+                      className="bg-red-400 hover:bg-red-500 text-white"
                     >
                       {isSubmitting ? "Submitting Order..." : "Submit Order"}
                     </Button>

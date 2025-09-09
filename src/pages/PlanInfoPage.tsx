@@ -181,7 +181,7 @@ export default function PlanInfoPage() {
           <Button 
             onClick={handleContinue}
             size="lg"
-            className="bg-pink-600 hover:bg-pink-700 text-white px-8 py-3"
+            className="bg-blue-400 hover:bg-blue-500 text-white px-8 py-3"
           >
             Select Breast Pump
           </Button>

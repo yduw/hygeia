@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -236,6 +236,14 @@ export default function ProductCatalog() {
   const [selectedPlan, setSelectedPlan] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [planSelected, setPlanSelected] = useState(false);
+
+  useEffect(() => {
+    const savedPlan = localStorage.getItem("selectedInsurancePlan");
+    if (savedPlan) {
+      setSelectedPlan(savedPlan);
+      setPlanSelected(true);
+    }
+  }, []);
   const [showCoveredOnly, setShowCoveredOnly] = useState(false);
   const [showUpgradeOnly, setShowUpgradeOnly] = useState(false);
   const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
@@ -245,6 +253,7 @@ export default function ProductCatalog() {
 
   const handlePlanSelection = () => {
     if (selectedPlan) {
+      localStorage.setItem("selectedInsurancePlan", selectedPlan);
       setIsModalOpen(false);
       setPlanSelected(true);
     }
@@ -323,7 +332,7 @@ export default function ProductCatalog() {
             <nav className="flex items-center space-x-4">
               <button 
                 onClick={() => navigate("/")}
-                className="bg-[#dc2626] hover:bg-[#b91c1c] text-white px-6 py-3 rounded-md text-lg font-semibold transition-colors cursor-pointer"
+                className="bg-red-400 hover:bg-red-500 text-white px-6 py-3 rounded-md text-lg font-semibold transition-colors cursor-pointer"
               >
                 Reorder Supplies
               </button>
@@ -331,7 +340,7 @@ export default function ProductCatalog() {
                 href="https://status.hygeiahealth.com/" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="bg-[#192866] hover:bg-[#151d5a] text-white px-6 py-3 rounded-md text-lg font-semibold transition-colors cursor-pointer"
+                className="bg-blue-400 hover:bg-blue-500 text-white px-6 py-3 rounded-md text-lg font-semibold transition-colors cursor-pointer"
               >
                 Track Order
               </a>
@@ -346,8 +355,7 @@ export default function ProductCatalog() {
           {/* Left Sidebar */}
           <div className="w-72 flex-shrink-0">
             <div className="bg-gray-50 rounded-lg p-6 border border-gray-200 sticky top-8">
-              <h2 className="text-lg font-bold text-[#192866] mb-6 flex items-center">
-                <div className="w-5 h-5 bg-[#192866] rounded mr-3"></div>
+              <h2 className="text-lg font-bold text-[#192866] mb-6">
                 Insurance Coverage
               </h2>
               
@@ -355,7 +363,7 @@ export default function ProductCatalog() {
                 <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
                   <DialogTrigger asChild>
                     <Button 
-                      className="w-full bg-[#dc2626] hover:bg-[#b91c1c] text-white font-medium py-3 px-4 border-0 rounded-md shadow-sm"
+                      className="w-full bg-blue-400 hover:bg-blue-500 text-white font-medium py-3 px-4 border-0 rounded-md shadow-sm"
                     >
                       Select Insurance Plan
                     </Button>
@@ -383,7 +391,7 @@ export default function ProductCatalog() {
                     <Button 
                       onClick={handlePlanSelection} 
                       disabled={!selectedPlan}
-                      className="w-full bg-[#dc2626] hover:bg-[#b91c1c]"
+                      className="w-full bg-blue-400 hover:bg-blue-500"
                     >
                       OK
                     </Button>
@@ -391,15 +399,24 @@ export default function ProductCatalog() {
                 </DialogContent>
               </Dialog>
               ) : (
-                <div className="bg-white border border-green-200 p-4 rounded-md">
-                  <div className="flex items-center mb-2">
-                    <div className="w-3 h-3 bg-green-500 rounded-full mr-2"></div>
-                    <div className="text-sm font-medium text-[#192866]">Coverage Verified</div>
+                <div className="bg-gradient-to-br from-blue-50 to-green-50 border-2 border-blue-200 p-4 rounded-lg shadow-sm">
+                  <div className="flex items-center mb-3">
+                    <div className="w-4 h-4 bg-blue-400 rounded-full mr-2 flex items-center justify-center">
+                      <div className="w-1.5 h-1.5 bg-white rounded-full"></div>
+                    </div>
+                    <div className="text-base font-semibold text-blue-600">Coverage Verified</div>
                   </div>
-                  <div className="text-sm text-gray-700 mb-3">{selectedPlan}</div>
+                  <div className="bg-white/60 backdrop-blur-sm rounded-lg p-3 mb-3">
+                    <div className="text-xs text-gray-600 mb-1">Your Insurance Plan</div>
+                    <div className="font-medium text-gray-800 text-sm">{selectedPlan}</div>
+                  </div>
                   <button 
-                    onClick={() => setPlanSelected(false)}
-                    className="text-xs text-[#dc2626] hover:underline font-medium"
+                    onClick={() => {
+                      localStorage.removeItem("selectedInsurancePlan");
+                      setSelectedPlan("");
+                      setPlanSelected(false);
+                    }}
+                    className="w-full text-xs bg-white/40 hover:bg-white/60 text-blue-600 hover:text-blue-700 py-1.5 px-3 rounded-lg border border-blue-200 transition-all duration-200 font-medium"
                   >
                     Change Plan
                   </button>
@@ -429,7 +446,7 @@ export default function ProductCatalog() {
                         onChange={(e) => setShowCoveredOnly(e.target.checked)}
                       />
                       <div className="flex items-center">
-                        <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
+                        <div className="w-2 h-2 bg-blue-400 rounded-full mr-2"></div>
                         Covered by Insurance ({BREAST_PUMPS.filter(p => !p.isUpgrade).length})
                       </div>
                     </label>
@@ -441,7 +458,7 @@ export default function ProductCatalog() {
                         onChange={(e) => setShowUpgradeOnly(e.target.checked)}
                       />
                       <div className="flex items-center">
-                        <div className="w-2 h-2 bg-orange-500 rounded-full mr-2"></div>
+                        <div className="w-2 h-2 bg-red-400 rounded-full mr-2"></div>
                         Upgrade Options ({BREAST_PUMPS.filter(p => p.isUpgrade).length})
                       </div>
                     </label>
@@ -589,7 +606,7 @@ export default function ProductCatalog() {
             {planSelected && (
               <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
                 <div className="flex items-center">
-                  <div className="w-5 h-5 bg-green-500 rounded-full mr-3"></div>
+                  <div className="w-5 h-5 bg-blue-400 rounded-full mr-3"></div>
                   <div>
                     <div className="font-medium text-green-800">Insurance Coverage Verified</div>
                     <div className="text-sm text-green-700">Showing products available under your {selectedPlan} plan</div>
@@ -607,11 +624,11 @@ export default function ProductCatalog() {
                       <div className="relative">
                         <div className="absolute top-3 left-3 z-10">
                           {pump.isUpgrade ? (
-                            <Badge className="bg-gradient-to-r from-orange-500 to-red-500 text-white text-xs px-2 py-1 shadow-md">
+                            <Badge className="bg-gradient-to-r from-red-400 to-red-500 text-white text-xs px-2 py-1 shadow-md">
                               UPGRADE
                             </Badge>
                           ) : (
-                            <Badge className="bg-gradient-to-r from-green-500 to-emerald-500 text-white text-xs px-2 py-1 shadow-md">
+                            <Badge className="bg-gradient-to-r from-blue-400 to-blue-500 text-white text-xs px-2 py-1 shadow-md">
                               COVERED
                             </Badge>
                           )}
@@ -649,7 +666,7 @@ export default function ProductCatalog() {
                             <div className="bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-lg p-3 min-h-[64px] flex flex-col justify-between">
                               <div className="flex items-center justify-between">
                                 <div className="flex items-center">
-                                  <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
+                                  <div className="w-2 h-2 bg-blue-400 rounded-full mr-2"></div>
                                   <span className="text-sm font-medium text-green-800">Fully Covered</span>
                                 </div>
                                 <span className="text-lg font-bold text-green-800">$0</span>
@@ -661,7 +678,7 @@ export default function ProductCatalog() {
                         
                         <Button 
                           onClick={() => planSelected ? handleProductClick(pump.id) : setIsModalOpen(true)}
-                          className="w-full bg-[#192866] hover:bg-[#151d5a] text-white font-medium py-2.5 rounded-lg transition-colors shadow-sm min-h-[44px] flex items-center justify-center"
+                          className="w-full bg-blue-400 hover:bg-blue-500 text-white font-medium py-2.5 rounded-lg transition-colors shadow-sm min-h-[44px] flex items-center justify-center"
                           disabled={!planSelected}
                         >
                           <span className="text-center leading-tight">
@@ -674,28 +691,6 @@ export default function ProductCatalog() {
                 ))}
               </div>
 
-              {/* Semi-transparent overlay when insurance not selected */}
-              {!planSelected && (
-                <div className="absolute inset-0 bg-white/10 backdrop-blur-[1px] flex items-start justify-center pt-16 z-20">
-                  <div className="bg-white/95 backdrop-blur-md rounded-xl shadow-2xl p-8 max-w-md mx-4 text-center border border-gray-200/80">
-                    <div className="w-16 h-16 bg-[#192866] rounded-full flex items-center justify-center mx-auto mb-6">
-                      <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                      </svg>
-                    </div>
-                    <h3 className="text-xl font-bold text-[#192866] mb-4">Insurance Verification Required</h3>
-                    <p className="text-gray-700 mb-6 text-sm leading-relaxed">
-                      To view pricing and order breast pumps, please select your insurance provider. This ensures accurate coverage information and pricing.
-                    </p>
-                    <Button 
-                      onClick={() => setIsModalOpen(true)}
-                      className="bg-[#dc2626] hover:bg-[#b91c1c] text-white px-8 py-3 font-medium rounded-lg shadow-lg"
-                    >
-                      Select Insurance Plan
-                    </Button>
-                  </div>
-                </div>
-              )}
             </div>
           </div>
         </div>

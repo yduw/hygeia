@@ -1,4 +1,5 @@
 import { useParams, useLocation, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -312,10 +313,19 @@ export default function ProductDetail() {
   const { id } = useParams();
   const location = useLocation();
   const navigate = useNavigate();
+  const [selectedPlan, setSelectedPlan] = useState("Insurance Plan");
+  
+  useEffect(() => {
+    const savedPlan = localStorage.getItem("selectedInsurancePlan");
+    if (savedPlan) {
+      setSelectedPlan(savedPlan);
+    } else if (location.state?.selectedPlan) {
+      setSelectedPlan(location.state.selectedPlan);
+    }
+  }, [location.state]);
   
   const productId = parseInt(id || "1");
   const product = BREAST_PUMP_DETAILS[productId as keyof typeof BREAST_PUMP_DETAILS] || BREAST_PUMP_DETAILS[1];
-  const selectedPlan = location.state?.selectedPlan || "Insurance Plan";
 
   const handleOrderClick = () => {
     navigate(`/order/${product.id}`, { state: { selectedPlan, product } });
@@ -345,7 +355,7 @@ export default function ProductDetail() {
             <nav className="flex items-center space-x-4">
               <button 
                 onClick={() => navigate("/")}
-                className="bg-[#dc2626] hover:bg-[#b91c1c] text-white px-6 py-3 rounded-md text-lg font-semibold transition-colors cursor-pointer"
+                className="bg-red-400 hover:bg-red-500 text-white px-6 py-3 rounded-md text-lg font-semibold transition-colors cursor-pointer"
               >
                 Reorder Supplies
               </button>
@@ -353,7 +363,7 @@ export default function ProductDetail() {
                 href="https://status.hygeiahealth.com/" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="bg-[#192866] hover:bg-[#151d5a] text-white px-6 py-3 rounded-md text-lg font-semibold transition-colors cursor-pointer"
+                className="bg-blue-400 hover:bg-blue-500 text-white px-6 py-3 rounded-md text-lg font-semibold transition-colors cursor-pointer"
               >
                 Track Order
               </a>
@@ -380,7 +390,7 @@ export default function ProductDetail() {
             <div className="relative bg-gray-50 border border-gray-200 rounded-lg p-8">
               {product.isUpgrade && (
                 <div className="absolute top-4 right-4">
-                  <Badge className="bg-orange-500 text-white">
+                  <Badge className="bg-red-400 text-white">
                     UPGRADE
                   </Badge>
                 </div>
@@ -444,7 +454,7 @@ export default function ProductDetail() {
             {/* Order Button */}
             <Button 
               onClick={handleOrderClick}
-              className="w-full bg-[#dc2626] hover:bg-[#b91c1c] text-white font-medium py-3 mb-4"
+              className="w-full bg-blue-400 hover:bg-blue-500 text-white font-medium py-3 mb-4"
             >
               {product.isUpgrade ? "Order & Pay Upgrade" : "Order Now"}
             </Button>

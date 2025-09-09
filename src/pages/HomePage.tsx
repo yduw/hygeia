@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -41,12 +41,20 @@ export default function HomePage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const navigate = useNavigate();
 
+  useEffect(() => {
+    const savedPlan = localStorage.getItem("selectedInsurancePlan");
+    if (savedPlan) {
+      setSelectedPlan(savedPlan);
+    }
+  }, []);
+
   const filteredProviders = INSURANCE_PROVIDERS.filter(provider =>
     provider.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const handlePlanSelection = () => {
     if (selectedPlan) {
+      localStorage.setItem("selectedInsurancePlan", selectedPlan);
       setIsModalOpen(false);
       navigate(`/plan-info/${encodeURIComponent(selectedPlan)}`);
     }
@@ -88,7 +96,7 @@ export default function HomePage() {
           
           <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
             <DialogTrigger asChild>
-              <Button size="lg" className="bg-pink-600 hover:bg-pink-700 text-white px-8 py-4 text-lg">
+              <Button size="lg" className="bg-blue-400 hover:bg-blue-500 text-white px-8 py-4 text-lg">
                 Get Started
               </Button>
             </DialogTrigger>
@@ -120,7 +128,7 @@ export default function HomePage() {
                 <Button 
                   onClick={handlePlanSelection} 
                   disabled={!selectedPlan}
-                  className="w-full bg-pink-600 hover:bg-pink-700"
+                  className="w-full bg-blue-400 hover:bg-blue-500"
                 >
                   OK
                 </Button>

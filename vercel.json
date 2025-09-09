@@ -1,13 +1,6 @@
 {
-  "functions": {
-    "src/index.tsx": {
-      "runtime": "@vercel/bun@1.0.0"
-    }
-  },
-  "rewrites": [
-    {
-      "source": "/(.*)",
-      "destination": "/src/index.tsx"
-    }
-  ]
+  "buildCommand": "bun run build",
+  "outputDirectory": "dist",
+  "framework": null,
+  "installCommand": "bun install"
 }

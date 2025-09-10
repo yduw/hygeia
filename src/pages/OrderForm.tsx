@@ -62,7 +62,24 @@ export default function OrderForm() {
     }
   }, [location.state]);
   
-  const product = location.state?.product || { name: "Breast Pump", isUpgrade: false, upgradePrice: 0 };
+  // Check URL params for testing upgrade product
+  const getProduct = () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const testPayment = urlParams.get('testPayment') === 'true';
+    
+    if (testPayment) {
+      return {
+        name: "Spectra S1 Plus - Premium Upgrade",
+        isUpgrade: true,
+        upgradePrice: 75,
+        description: "Hospital-grade pump with advanced features"
+      };
+    }
+    
+    return location.state?.product || { name: "Breast Pump", isUpgrade: false, upgradePrice: 0 };
+  };
+  
+  const product = getProduct();
 
   const form = useForm<OrderFormData>({
     resolver: zodResolver(orderSchema),
